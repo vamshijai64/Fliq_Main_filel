@@ -4,7 +4,12 @@ const mongoose = require('mongoose');
 
 const subcategorySchema = new mongoose.Schema({
   title: { type: String, required: true, unique: true },
-  imageUrl: { type: String },
+  imageUrl: {
+    landscape: { type: String, default: "" },
+    portrait: { type: String, default: "" },
+    thumbnail: { type: String, default: "" },
+  },
+ 
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
   quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }]
 }, { timestamps: true });

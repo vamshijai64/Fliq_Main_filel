@@ -1,20 +1,20 @@
 const MovieNewsModel= require('../models/movienewsModel');
 
-exports.addMovieNews = async ({ title, description,imageFile, imageUrl }) => {
+exports.addMovieNews = async ({ title, description, imageUrl }) => {
        
         try {
             // let imageUrl = null;
     
-            let finalImageUrl=imageUrl;
+            // let finalImageUrl=imageUrl;
         
           
-            if (!finalImageUrl) {
-                return res.status(400).json({ error: "Image file or URL is required" });
-            }
+            // if (!finalImageUrl) {
+            //     return res.status(400).json({ error: "Image file or URL is required" });
+            // }
             const news = new MovieNewsModel({
             title,
             description,
-            imageUrl:finalImageUrl,
+            imageUrl,
             });
         
             return await news.save(); 

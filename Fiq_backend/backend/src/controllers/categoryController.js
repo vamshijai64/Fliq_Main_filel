@@ -8,9 +8,21 @@ exports.createCategory=async(req,res)=>{
 
         const {title,imageUrl }=req.body;
        // const imageFile=req.file 
-       if (!title || !imageUrl) {
-        return res.status(400).json({ error: "Title and Image URL are required" });
+    //    if (!title || !imageUrl) {
+    //     return res.status(400).json({ error: "Title and Image URL are required" });
+    // }
+    if (
+      !title ||
+      !imageUrl ||
+      !imageUrl.landscape ||
+      !imageUrl.portrait ||
+      !imageUrl.thumbnail
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Title and all image sizes are required" });
     }
+
 
     
     //this line user for aws configuration

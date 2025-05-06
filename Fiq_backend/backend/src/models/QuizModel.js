@@ -35,11 +35,11 @@ const quizSchema = new mongoose.Schema({
       },
       hint: {  
         type: String, 
-        default: null,
+        default: "",
       },
       imageUrl:{ 
         type: String, 
-        default: null,
+        default: "",
       },
       hashtags: [
         { 

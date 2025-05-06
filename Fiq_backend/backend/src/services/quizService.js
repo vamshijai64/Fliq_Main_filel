@@ -300,7 +300,7 @@ exports.updateQuestion = async(quizId,  questionId,updateData)=>{
     quiz.questions[questionIndex].question = updateData.question;
     quiz.questions[questionIndex].correctOption = updateData.correctOption;
     quiz.questions[questionIndex].hint = updateData.hint;
-
+    quiz.questions[questionIndex].hashtags = updateData.hashtags;
     //  Save the updated quiz
     const updatedQuiz = await quiz.save();
 

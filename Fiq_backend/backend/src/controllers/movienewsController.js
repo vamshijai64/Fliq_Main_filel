@@ -6,7 +6,10 @@ exports.addMovieNews = async (req, res) => {
      
         const { title, description,imageUrl } = req.body;
         //const imageFile=req.file;
-    
+        console.log("Received imageUrl:", imageUrl);
+        if (!Array.isArray(imageUrl) || imageUrl.length === 0) {
+            return res.status(400).json({ error: "At least one image set is required" });
+        }
 
     const news = await movieNewsService.addMovieNews({ title, description, imageUrl });
 

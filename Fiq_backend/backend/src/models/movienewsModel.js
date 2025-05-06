@@ -9,7 +9,15 @@ const movienewsSchema = new mongoose.Schema({
         type:String,    
         required:true,
     },
-    imageUrl:{type:String,required:true},
+    // imageUrl:{type:String,required:true},
+
+    imageUrl: [
+        {
+          landscape: { type: String, required: true },
+          portrait: { type: String, required: true },
+          thumbnail: { type: String, required: true },
+        }
+      ],
    
 },
 {
