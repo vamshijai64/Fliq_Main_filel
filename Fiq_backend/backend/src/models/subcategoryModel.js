@@ -9,6 +9,7 @@ const subcategorySchema = new mongoose.Schema({
     portrait: { type: String, default: "" },
     thumbnail: { type: String, default: "" },
   },
+  images:[],
  
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
   quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }]

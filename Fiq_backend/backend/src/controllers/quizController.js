@@ -1,6 +1,7 @@
 const quizService=require('../services/quizService')
 const User = require('../models/userModel');
 const IncompleteQuizModel = require("../models/IncompleteQuiz");
+const QuizModel = require("../models/QuizModel");
 
 exports.createQuiz = async (req, res) => {
   try {
@@ -70,6 +71,26 @@ exports.getAllQuizzes = async (req, res) => {
     
   }
 };
+
+exports.getQuizById = async (req, res) => {
+  try {
+    const quizId = req.params.id;
+
+    const quiz = await QuizModel.findById(quizId)
+      .populate('category')       // Populate full category document
+      .populate('subcategory');   // Populate full subcategory document
+
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found' });
+    }
+
+    res.status(200).json(quiz);
+  } catch (error) {
+    console.error('Error fetching quiz by ID:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 
 exports.getRandomQuiz = async (req, res) => {
@@ -248,19 +269,17 @@ exports.getIncompleteQuizzesByUserId = async (req, res) => {
 };
 
 
-
-
-exports.deleteQuiz=async (req,res)=>{
-
+exports.deleteQuiz = async (req, res) => {
   try {
-    const { quizId } = req.params; // Get the quiz ID from request params
-    const result = await quizService.deleteQuiz(quizId); // Call service function
-    res.status(200).json(result); // Send response
+    const { id } = req.params;
+    console.log("Deleting quiz with ID:", id);
+
+    const result = await quizService.deleteQuiz(id);
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: "Error deleting quiz", error: error.message });
   }
-
-}
+};
 
 // exports.createQuiz=async(req,res)=>{
 //    try {

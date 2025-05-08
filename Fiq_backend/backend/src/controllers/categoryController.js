@@ -6,7 +6,7 @@ const CategeoryModel=require('../models/CategeoryModel')
 exports.createCategory=async(req,res)=>{
     try {
 
-        const {title,imageUrl }=req.body;
+        const {title,imageUrl,images }=req.body;
        // const imageFile=req.file 
     //    if (!title || !imageUrl) {
     //     return res.status(400).json({ error: "Title and Image URL are required" });
@@ -27,7 +27,7 @@ exports.createCategory=async(req,res)=>{
     
     //this line user for aws configuration
     // const imageUrl = imageFile.location;
-    const category= await categoryService.createCategory(title,imageUrl);
+    const category= await categoryService.createCategory(title,imageUrl,images);
   
       
    return res.status(201).json({ success: true, category });

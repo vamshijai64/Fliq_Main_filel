@@ -12,6 +12,13 @@ const categorySchema = new mongoose.Schema({
     portrait: { type: String, default: "" },
     thumbnail: { type: String, default: "" },
   },
+  images: [
+    {
+      landscape: { type: String,},
+      portrait: { type: String,  },
+      thumbnail: { type: String, },
+    }
+  ],
  
  
   subcategories: [

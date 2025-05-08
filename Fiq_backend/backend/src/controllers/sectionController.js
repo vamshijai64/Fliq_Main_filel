@@ -5,10 +5,10 @@ exports.addSection = async (req, res) => {
         // if (!req.file) {
         //     return res.status(400).json({ error: 'Image file is required' });
         // }
-        const { title,imageUrl } = req.body;
+        const { title,imageUrl,images } = req.body;
      
         
-        const data = await sectionService.addSection(title, imageUrl);
+        const data = await sectionService.addSection(title, imageUrl,images);
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });

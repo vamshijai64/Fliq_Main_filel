@@ -405,6 +405,7 @@ exports.saveQuitQuiz = async (userId,subcategoryId) => {
 return { _id: existing._id, userId, subcategoryId };
   
 }
+
 // exports.getIncompleteQuizzes =async (userId) => {
 //   const incompleteQuizzes = await IncompleteQuiz.find({ userId }).populate('subcategoryId',"title").lean();
   

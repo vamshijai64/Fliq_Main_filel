@@ -7,7 +7,7 @@ const quizModel=require('../models/QuizModel')
 // const questionModel=require('../models/questionModel')
 
 
-exports.createSubcategory = async (title, imageUrl,category) => {
+exports.createSubcategory = async (title, imageUrl,images,category) => {
  
 
   try {
@@ -39,6 +39,7 @@ exports.createSubcategory = async (title, imageUrl,category) => {
     const subcategory = new subcategoryModel({
       title: normalizedName, 
       imageUrl: imageUrl,
+      images: images,
       category: categoryDoc._id,
     });
 

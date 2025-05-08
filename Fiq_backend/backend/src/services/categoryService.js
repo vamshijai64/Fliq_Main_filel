@@ -7,7 +7,7 @@ const QuizModel=require('../models/QuizModel')
 
 
 
-exports.createCategory=async(title,imageUrl)=>{
+exports.createCategory=async(title,imageUrl,images)=>{
 
     try{
       if (!title || !imageUrl) {
@@ -27,7 +27,7 @@ exports.createCategory=async(title,imageUrl)=>{
          //  Save the actual S3 URL
     //const imageUrl = imageFile ? imageFile.location : null;
         
-        const category=new CategeoryModel({title,imageUrl})
+        const category=new CategeoryModel({title,imageUrl,images})
         
         return await category.save();
         

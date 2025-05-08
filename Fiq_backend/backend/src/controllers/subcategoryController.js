@@ -4,9 +4,9 @@ const subcategoryService = require('../services/subcategoryService');
 exports.createSubcategory = async (req, res) => {
 
   try {
-    const { title, category,imageUrl } = req.body;
+    const { title, category,imageUrl,images } = req.body;
     
-    const subcategory = await subcategoryService.createSubcategory(title, imageUrl, category);
+    const subcategory = await subcategoryService.createSubcategory(title, imageUrl,images, category);
     
     res.status(201).json({ message: 'Subcategory created successfully', subcategory });
   } catch (error) {

@@ -4,16 +4,31 @@ const { sendPushToAllUsers } = require('../services/firebaseService');
 exports.addMovieNews = async (req, res) => {
     try {
      
-        const { title, description,imageUrl } = req.body;
+        const { title, description,images } = req.body;
+
+           // Check if imageUrl is present in the request body
+           let { imageUrl } = req.body;
+        
+           // If imageUrl is not provided, assign an empty object
+           if (!imageUrl) {
+               imageUrl = {};
+           }
         //const imageFile=req.file;
         console.log("Received imageUrl:", imageUrl);
-        if (!Array.isArray(imageUrl) || imageUrl.length === 0) {
+        if (!Array.isArray(images) || images.length === 0) {
             return res.status(400).json({ error: "At least one image set is required" });
         }
 
-    const news = await movieNewsService.addMovieNews({ title, description, imageUrl });
+    const news = await movieNewsService.addMovieNews({ title, description, imageUrl,images });
 
     await sendPushToAllUsers('New Movie News!', `${title}: ${description}`);
+
+    const responseNews = {
+        ...news.toObject(),
+        imageUrl: imageUrl || {},  // Ensure imageUrl is empty if not provided
+    };
+
+
   
     // // 2. Get all users with a valid FCM token
     // const users = await User.find({ fcmToken: { $ne: null } });
@@ -33,8 +48,11 @@ exports.addMovieNews = async (req, res) => {
     //   }
     // }
 
-        res.status(201).json({ message: "Movie news added successfully", news });
-        console.log(news, "movienews");
+        // res.status(201).json({ message: "Movie news added successfully", news });
+        // console.log(news, "movienews");
+
+        res.status(201).json({ message: "Movie news added successfully", news: responseNews });
+        console.log(responseNews, "movienews");
     } catch (error) {
         res.status(500).json({ error: error.message });
         console.error("movienews error:", error);

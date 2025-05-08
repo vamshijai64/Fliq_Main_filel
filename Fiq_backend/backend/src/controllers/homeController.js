@@ -21,88 +21,222 @@ const sectionModel = require('../models/sectionModel');
 //  Search & Filtering → Better
 // Indexing → Optimize large datasets
 //  Real-time updates → WebSockets for live changes}
+// exports.gethome = async (req, res) => {
+//   try {
+//     // this line Fetch latest one for banners
+//     const latestMovieNews = await movieNewsmodel
+//       .findOne()
+//       .sort({ createdAt: -1 })
+//       .select(" _id title description imageUrl createdAt");
+
+//     const latestMovieReview = await sectionModel
+//       .findOne()
+//       .sort({ createdAt: -1 })
+//       .select("_id title  imageUrl rating createdAt");
+
+//     const latestCategory = await categoryModel
+//       .findOne()
+//       .sort({ createdAt: -1 })
+//       .select("_id title imageUrl subcategories createdAt");
+
+
+
+
+//     // this lines latest 10 for response
+//     const movieNews = await movieNewsmodel
+//       .find()
+//       .sort({ createdAt: -1 })
+//       .limit(10)
+//       .select("_id title description images imageUrl createdAt");
+
+//     const movieReviews = await sectionModel
+//       .find()
+//       .sort({ createdAt: -1 })
+//       .limit(10)
+//       .select("_id title rating reviewText imageUrl createdAt");
+
+//     const categories = await categoryModel
+//       .find()
+//       .sort({ createdAt: -1 })
+//       .limit(10)
+//       .select(" _id title imageUrl  createdAt");
+
+    
+
+//     // Fetch subcategories for each category with images
+//     const categoriesWithSubcategories = await Promise.all(
+//       categories.map(async (category) => {
+//         const subcategories = await subcategoryModel
+//           .find({ category: category._id })
+//           .select("_id title imageUrl createdAt"); 
+
+//         return { 
+//           _id: category._id,
+//           title: category.title, 
+//           imageUrl: category.imageUrl, subcategories
+//          };
+//       })
+//     );
+
+   
+//     const banners = [];
+    
+//     if (latestMovieNews) banners.push({ type: "movieNews", data: latestMovieNews });
+//     if (latestMovieReview) banners.push({ type: "movieReviews", data: latestMovieReview });
+//     if (latestCategory) banners.push({ type: "categories", data: latestCategory });
+
+//     const response = [
+//       { type: "movieNews", _id: "",data: movieNews },
+//       { type: "movieReviews",_id: "", data: movieReviews },
+//       ...categoriesWithSubcategories.map(category => ({
+//         type: category.title ,
+//         _id: category._id,
+//         data: category.subcategories 
+//       }))
+      
+//     ];
+//     console.log("Categories with Subcategories:", categoriesWithSubcategories);
+
+//     res.json({ banners, response });
+//   } catch (error) {
+//     console.error("Error fetching homepage data:", error);
+//     res.status(500).json({ error: "Failed to load homepage data" });
+//   }
+// };
 exports.gethome = async (req, res) => {
   try {
-    // this line Fetch latest one for banners
+    // Fetch the latest Movie News for banners, including imageUrl and images
     const latestMovieNews = await movieNewsmodel
       .findOne()
       .sort({ createdAt: -1 })
-      .select(" _id title description imageUrl createdAt");
+      .select("_id title description imageUrl images createdAt");  // Make sure to select imageUrl and images
 
+    // Fetch the latest Movie Reviews for banners
     const latestMovieReview = await sectionModel
       .findOne()
       .sort({ createdAt: -1 })
-      .select("_id title  imageUrl rating createdAt");
+      .select("_id title imageUrl images rating createdAt");
 
+    // Fetch the latest Category for banners
     const latestCategory = await categoryModel
       .findOne()
       .sort({ createdAt: -1 })
-      .select("_id title imageUrl subcategories createdAt");
+      .select("_id title imageUrl images subcategories createdAt");
 
-
-
-
-    // this lines latest 10 for response
+    // Fetch the latest 10 movie news
     const movieNews = await movieNewsmodel
       .find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select("_id title description imageUrl createdAt");
+      .select("_id title description images imageUrl createdAt");
 
+    // Fetch the latest 10 movie reviews
     const movieReviews = await sectionModel
       .find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select("_id title rating reviewText imageUrl createdAt");
+      .select("_id title rating reviewText imageUrl images createdAt");
 
+    // Fetch the latest 10 categories
     const categories = await categoryModel
       .find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select(" _id title imageUrl  createdAt");
+      .select("_id title imageUrl images createdAt");
 
-    
-
-    // Fetch subcategories for each category with images
+    // Fetch subcategories for each category
     const categoriesWithSubcategories = await Promise.all(
       categories.map(async (category) => {
         const subcategories = await subcategoryModel
           .find({ category: category._id })
-          .select("_id title imageUrl createdAt"); 
+          .select("_id title imageUrl images createdAt");
 
-        return { 
+        return {
           _id: category._id,
-          title: category.title, 
-          imageUrl: category.imageUrl, subcategories
-         };
+          title: category.title,
+          imageUrl: category.imageUrl,
+          images: category.images || [],  // Ensure images is an array
+          subcategories,
+        };
       })
     );
 
-   
+    // Set banners with movie news, including imageUrl and images
     const banners = [];
-    
-    if (latestMovieNews) banners.push({ type: "movieNews", data: latestMovieNews });
-    if (latestMovieReview) banners.push({ type: "movieReviews", data: latestMovieReview });
-    if (latestCategory) banners.push({ type: "categories", data: latestCategory });
+    if (latestMovieNews) banners.push({ 
+      type: "movieNews", 
+      data: {
+        _id: latestMovieNews._id,
+        title: latestMovieNews.title,
+        description: latestMovieNews.description,
+        imageUrl: latestMovieNews.imageUrl || {},  // Ensure imageUrl is an object
+        images: latestMovieNews.images || [],     // Ensure images is an array
+        createdAt: latestMovieNews.createdAt,
+      }
+    });
 
+    if (latestMovieReview) banners.push({ 
+      type: "MovieReviews", 
+      data: {
+        _id: latestMovieReview._id,
+        title: latestMovieReview.title,
+        description: latestMovieReview.description,
+        imageUrl: latestMovieReview.imageUrl || {},  // Ensure imageUrl is an object
+        images: latestMovieReview.images || [],     // Ensure images is an array
+        createdAt: latestMovieReview.createdAt,
+      }
+    });
+    if (latestCategory) banners.push({ 
+      type: "Categories", 
+      data: {
+        _id: latestCategory._id,
+        title: latestCategory.title,
+        description: latestCategory.description,
+        imageUrl: latestCategory.imageUrl || {},  // Ensure imageUrl is an object
+        images: latestCategory.images || [],     // Ensure images is an array
+        createdAt: latestCategory.createdAt,
+      }
+    });
+    // Prepare the response with both images[] and imageUrl
     const response = [
-      { type: "movieNews", _id: "",data: movieNews },
-      { type: "movieReviews",_id: "", data: movieReviews },
-      ...categoriesWithSubcategories.map(category => ({
-        type: category.title ,
+      { 
+        type: "movieNews", 
+        _id: "", 
+        data: movieNews.map(news => ({
+          ...news.toObject(),
+          imageUrl: news.imageUrl || {},  // Default empty object for imageUrl
+          images: news.images || []      // Default empty array for images
+        }))
+      },
+      { 
+        type: "movieReviews", 
+        _id: "", 
+        data: movieReviews.map(review => ({
+          ...review.toObject(),
+          imageUrl: review.imageUrl || {},  // Default empty object for imageUrl
+          images: review.images || []      // Default empty array for images
+        }))
+      },
+      ...categoriesWithSubcategories.map((category) => ({
+        type: category.title,
         _id: category._id,
-        data: category.subcategories 
+
+        data: category.subcategories,
       }))
-      
     ];
+
+    // Log the fetched categories with subcategories for debugging
     console.log("Categories with Subcategories:", categoriesWithSubcategories);
 
+    // Send the response with updated banners and movieNews data
     res.json({ banners, response });
   } catch (error) {
     console.error("Error fetching homepage data:", error);
     res.status(500).json({ error: "Failed to load homepage data" });
   }
 };
+
+
 
 
 exports.getAllData = async (req, res) => {

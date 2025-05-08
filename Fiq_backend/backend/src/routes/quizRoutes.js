@@ -10,6 +10,7 @@ router.post('/create', quizController.createQuiz);
 // router.post('/create',upload.single("imageUrl"), quizController.createQuiz);
 // router.get("/subcategory/:subcategoryId",quizController.getRandomQuiz)
 router.get("/subcategory/:subcategoryId", quizController.getRandomQuizWithHashtagQuestions);
+router.get("/:id", quizController.getQuizById);
 
 //router.get('/:subcategoryId', quizController.getQuizzesBySubcategory);
 

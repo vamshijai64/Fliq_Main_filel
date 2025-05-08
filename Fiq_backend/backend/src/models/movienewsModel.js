@@ -11,14 +11,18 @@ const movienewsSchema = new mongoose.Schema({
     },
     // imageUrl:{type:String,required:true},
 
-    imageUrl: [
+    imageUrl: {
+        landscape: { type: String },
+        portrait: { type: String },
+        thumbnail: { type: String }
+    },
+    images: [
         {
-          landscape: { type: String, required: true },
-          portrait: { type: String, required: true },
-          thumbnail: { type: String, required: true },
+            landscape: { type: String },
+            portrait: { type: String },
+            thumbnail: { type: String }
         }
-      ],
-   
+    ]
 },
 {
     timestamps: true, //  This adds both `createdAt` and `updatedAt` fields

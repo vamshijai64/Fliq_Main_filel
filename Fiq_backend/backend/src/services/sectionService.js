@@ -1,11 +1,11 @@
 const sectionModel = require('../models/sectionModel');
 const titleModel = require('../models/titleModel');
 
-exports.addSection = async (title, imageUrl) => {
+exports.addSection = async (title, imageUrl,images) => {
     const isExists = await sectionModel.findOne({ title });
     if(isExists) throw new Error('Section already exist');
 
-    const newSectionData = new sectionModel({ title, imageUrl });
+    const newSectionData = new sectionModel({ title, imageUrl,images });
     return await newSectionData.save();
 };
 

@@ -1,6 +1,6 @@
 const MovieNewsModel= require('../models/movienewsModel');
 
-exports.addMovieNews = async ({ title, description, imageUrl }) => {
+exports.addMovieNews = async ({ title, description, imageUrl,images }) => {
        
         try {
             // let imageUrl = null;
@@ -15,6 +15,7 @@ exports.addMovieNews = async ({ title, description, imageUrl }) => {
             title,
             description,
             imageUrl,
+            images,
             });
         
             return await news.save(); 

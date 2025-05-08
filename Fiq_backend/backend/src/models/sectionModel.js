@@ -8,6 +8,13 @@ const sectionSchema = mongoose.Schema({
       portrait: { type: String, default: "" },
       thumbnail: { type: String, default: "" },
     },
+    images: [
+      {
+        landscape: { type: String,  },
+        portrait: { type: String,  },
+        thumbnail: { type: String,  },
+      }
+    ],
    titles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Title" }]
 }, { timestamps: true });
 
