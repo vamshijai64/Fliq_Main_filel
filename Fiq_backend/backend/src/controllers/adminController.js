@@ -33,7 +33,7 @@ const loginAdmin = async (req, res) => {
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    // ✅ Token includes adminId for tracking
+    //  Token includes adminId for tracking
     const token = jwt.sign({ adminId: admin._id, role: "admin" }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.json({ token, message: "Login successful" });
   } catch (error) {
@@ -41,7 +41,7 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-// 🔒 Protected Route Example
+// 🔒Example Protected Route 
 const adminDashboard = (req, res) => {
   res.json({ message: "Welcome to the Admin Dashboard!" });
 };

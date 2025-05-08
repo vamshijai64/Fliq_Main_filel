@@ -6,7 +6,6 @@ const IncompleteQuizModel = require("../models/IncompleteQuiz");
 exports.getGameApiDashboard = async (req, res) => {
     try {
         const userId = req.user.userId;
-
         // Get latest categories
         const latestCategories = await categoryModel
             .find()
@@ -56,7 +55,7 @@ exports.getGameApiDashboard = async (req, res) => {
         // Prepare banners
         const banners = [];
         if (latestCategories.length > 0) {
-            banners.push({ type: "categories", data: latestCategories });
+            banners.push({ type: "Categories", data: latestCategories });
         }
 
         // Send final response
@@ -66,72 +65,3 @@ exports.getGameApiDashboard = async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 };
-
-
-// const categoryModel=require("../models/CategeoryModel");
-// const subcategoryModel =require('../models/subcategoryModel');
-// const IncompleteQuizModel=require('../models/IncompleteQuiz')
-
-
-// exports.getGameApiDashboard = async (req, res) => {
-//     try {
-
-//         const userId = req.user.userId;
-
-       
-//         const latestCategories = await categoryModel
-//             .find()
-//             .sort({ createdAt: -1 })
-//             .limit(10)
-//             .select("title imageUrl createdAt");
-
-//             const userIncompleteQuizzes = await IncompleteQuizModel.find({ userId })
-//             .sort({ createdAt: -1 })
-//             .limit(10)
-//             .populate({
-//                 path: "subcategoryId",
-//                 select: "_id title imageUrl createdAt"
-//             });
-      
-            
-
-//             console.log("Fetched incomplete quizzes: ", userIncompleteQuizzes);
-
-           
-        
-
-     
-//         const categoriesWithSubcategories = await Promise.all(
-//             latestCategories.map(async (category) => {
-//                 const subcategories = await subcategoryModel
-//                     .find({ category: category._id })
-//                     .sort({ createdAt: -1 })
-//                     .select("_id title imageUrl createdAt");
-
-//                 return {
-//                     type: category.title , 
-//                     _id: category._id,
-//                     data: subcategories  
-//                 };
-//             })
-//         );
-
-      
-//         const banners = [];
-
-//                let incompleteQuizz =[];
-
-//         if (latestCategories.length > 0) {
-//             banners.push({ type: "categories", data: latestCategories });
-//         }
-           
-        
-
-//         const response = categoriesWithSubcategories; 
-
-//         res.json({ banners,incompleteQuizz , response });
-
-//     } catch (error) {
-//         res.status(500).send({ message: ercdror.message });
-//     }
-// };

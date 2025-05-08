@@ -54,3 +54,21 @@ exports.getSectionById = async (req, res) => {
 //         res.status(500).json({ error: error.message });
 //     }
 // };
+
+exports.updateSectionById = async (req, res) => {
+    try {
+        const section = await sectionService.updateSectionById(req.params.sectionId, req.body);
+        res.json(section);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.deleteSectionById = async (req, res) => {
+    try {
+        const section = await sectionService.deleteSectionById(req.params.sectionId);
+        res.json(section);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

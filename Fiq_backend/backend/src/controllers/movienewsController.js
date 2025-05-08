@@ -82,6 +82,39 @@ exports.getMovieNews = async (req, res) => {
         
     }
 };
+exports.updateMovieNews = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, imageUrl, images } = req.body;
+
+        // Check if the movie news exists
+        const existingNews = await movieNewsService.getMovieNewsById(id);
+        if (!existingNews) {
+            return res.status(404).json({ error: "Movie news not found" });
+        }
+
+        // Build updateFields dynamically
+        const updateFields = {};
+        if (title !== undefined) updateFields.title = title;
+        if (description !== undefined) updateFields.description = description;
+        if (imageUrl !== undefined) updateFields.imageUrl = imageUrl;
+        if (images !== undefined) updateFields.images = images;
+
+        // If no valid fields to update
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ error: "No fields to update" });
+        }
+
+        const updatedNews = await movieNewsService.updateMovieNews(id, updateFields);
+
+        res.status(200).json({
+            message: "Movie news updated successfully",
+            updatedNews,
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 exports.getLatestMovieNews = async (req, res) => {
     try {
@@ -98,3 +131,21 @@ exports.getLatestMovieNews = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+exports.deleteMovieNews = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const news = await movieNewsService.deleteMovieNews(id);
+        if (!news) {
+            return res.status(404).json({ error: "Movie news not found" });
+        }
+
+        res.status(200).json({
+            message: "Movie news deleted successfully",
+            deletedNews: news,
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

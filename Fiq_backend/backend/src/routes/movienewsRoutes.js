@@ -10,11 +10,13 @@ router.post('/addmovienews',movienewsController.addMovieNews);
 router.get('/latest', movienewsController.getLatestMovieNews);
 
 router.get('/:id',movienewsController.getMovieNewsById);
+router.put('/update/:id',movienewsController.updateMovieNews);
+
 
 
 
 router.get('/',movienewsController.getMovieNews);
-
+router.delete('/delete/:id',movienewsController.deleteMovieNews);
 module.exports = router;
 
 

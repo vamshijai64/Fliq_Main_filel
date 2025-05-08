@@ -109,18 +109,6 @@ exports.getCategoriesBySearch = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
 ///Get by name 
 exports.getCategorieyByName=async(req,res)=>{
   try {

@@ -49,6 +49,16 @@ exports.getMovieNewsById = async (id) => {
     };
 };
 
+exports.updateMovieNews = async (id, updateFields) => {
+    const news = await MovieNewsModel.findByIdAndUpdate(
+        id,
+        { $set: updateFields },
+        { new: true }
+    );
+    return news;
+};
+
+
 exports.getLatestMovieNews = async ({ page, limit, search }) => {
     const query = {};
     if (search) query.title = { $regex: search, $options: "i" }; 
@@ -69,4 +79,8 @@ exports.getLatestMovieNews = async ({ page, limit, search }) => {
 
 
 
+exports.deleteMovieNews = async (id) => {
+    const news = await MovieNewsModel.findByIdAndDelete(id);
+    return news; // Return deleted document or null
+};
 

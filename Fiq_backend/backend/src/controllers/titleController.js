@@ -46,3 +46,19 @@ exports.getTitle = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+exports.updateTitleById = async (req, res) => {
+    try {
+        const title = await TitleService.updateTitleById(req.params.titleId, req.body);        
+        res.json({ message: "Title updated successfully." });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+exports.deleteTitleById = async (req, res) => {
+    try {
+        const title = await TitleService.deleteTitleById(req.params.titleId);        
+        res.json(title);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

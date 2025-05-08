@@ -73,3 +73,35 @@ exports.getTitle = async (id) => {
 
     return title;
 };
+
+xports.updateTitleById = async (id, data) => {
+    // title, imageurl as data
+    const updatedTitle = await Title.findByIdAndUpdate(
+        id,
+        { $set: data },
+        { new: true }
+    );
+
+    if (!updatedTitle) {
+        throw new Error("Title not found.");
+    }
+
+    return updatedTitle;
+}
+exports.deleteTitleById = async (id) => {
+    // Step 1: Find and delete the title
+    const title = await Title.findByIdAndDelete(id);
+    if (!title) {
+        throw new Error("Title not found.");
+    }
+     // Step 2: Remove the title ID from the corresponding section
+    await Section.findByIdAndUpdate(
+        title.section, // this is the section ID from the deleted title
+        { $pull: { titles: id } } // pull the title ID from the array
+    );
+
+    // Step 3: Delete all reviews related to the title
+    await Review.deleteMany({ title: id });
+
+    return { message: "Title and associated reviews deleted successfully." };
+};

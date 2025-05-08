@@ -56,6 +56,42 @@ exports.getSectionById = async (sectionId) => {
 
     return { ...section, data: processedTitles };
 };
+exports.updateSectionById = async (id, data) => {
+    // title and imageUrl as data
+    const updatedSection = await sectionModel.findByIdAndUpdate(
+        id,
+        { $set: data }, // only update provided fields
+        { new: true }    // return the updated document
+    );
+
+    if (!updatedSection) {
+        throw new Error("Section not found.");
+    }
+
+    return updatedSection;
+};
+
+exports.deleteSectionById = async (id) => {
+    // Step 1: Find the section
+    const section = await sectionModel.findById(id);
+    if (!section) {
+        throw new Error("Section not found.");
+    }
+
+    // Step 2: Get all title IDs under this section
+    const titleIds = section.titles;
+
+    // Step 3: Delete all reviews under these titles
+    await reviewModel.deleteMany({ title: { $in: titleIds } });
+
+    // Step 4: Delete all titles under this section
+    await titleModel.deleteMany({ _id: { $in: titleIds } });
+
+    // Step 5: Delete the section
+    await sectionModel.findByIdAndDelete(id);
+
+    return { message: "Section, its titles, and associated reviews deleted successfully." };
+};
 
 
 // const Section = require('../models/sectionModel');

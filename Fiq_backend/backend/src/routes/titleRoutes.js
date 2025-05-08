@@ -10,5 +10,7 @@ const upload = require('../middlewares/uploadMiddleware');
 router.get('/getTitle/:id', TitleController.getTitle); // To fetch all title based on the id
 router.get('/getAllTitles/:sectionId', TitleController.getTitlesBySectonId); // To get all titles based on section id
  router.get('/getAllTotalTitles', TitleController.getAllTitles)
+ router.put('/updateTitle/:titleId', TitleController.updateTitleById);
+ router.delete('/deleteTitle/:titleId', TitleController.deleteTitleById);
 
 module.exports = router;
