@@ -4,6 +4,7 @@ import { FiX } from "react-icons/fi";
 // import { MdRemoveRedEye } from "react-icons/md";
 import axiosInstance from "../../services/axiosInstance";
 import { useNavigate } from "react-router-dom"; 
+import logo from './Group62.png';
 
 function Login({setUser}) {
   const [email, setEmail] = useState("");
@@ -42,7 +43,11 @@ function Login({setUser}) {
   return (
     <div className={styles.main}>
       <div className={styles.modal}>
-        <p className={styles.title}>CineQuiz</p>
+        {/* <p className={styles.title}>FliQ</p> */}
+        <div className={styles.logoContainer}>
+          <img src={logo} alt="logo" width="60" height="60" />
+          <p>FliQ</p>
+        </div>
         <p className={styles.subtitle}>Welcome to Admin Panel</p>
         <form onSubmit={handleSubmit}>
           <p>Email</p>

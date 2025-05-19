@@ -23,7 +23,7 @@ function Header() {
 
     return(
         <div className={styles.header}>
-            <p>CineQuiz - Admin Panel</p>
+            <p>FliQ - Admin Panel</p>
             <div
                 className={styles.icon}
                 onClick={toggleSubmenu}

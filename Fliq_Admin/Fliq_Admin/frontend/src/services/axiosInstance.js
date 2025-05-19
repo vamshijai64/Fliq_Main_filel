@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  //  baseURL: 'http://36.255.253.67:3003',
-     baseURL: 'http://localhost:3003',
+    // baseURL: 'http://36.255.253.67:4003',
+    // baseURL: 'http://localhost:3003',
+    baseURL: 'http://36.255.253.67:4003',
 });
 
 axiosInstance.interceptors.request.use(

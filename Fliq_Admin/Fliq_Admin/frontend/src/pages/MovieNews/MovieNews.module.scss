@@ -7,7 +7,8 @@
 
 .header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    flex-direction: row;
     align-items: center;
     padding: 1px 5px;
     border-bottom: 3px solid white;
@@ -22,8 +23,82 @@
     margin-bottom: 10px;
 }
 
+.newsList {
+    margin-top: 20px;
+  }
+  
+  .newsCard {
+    border: 1px solid #ccc;
+    background-color: #000000;
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+     
+    p{
+        color: #ccc;
+        text-align: left;
+    }
+
+    h3{
+        color: #ccc;
+        text-align: left;
+        margin-top: 40px;
+    }
+  }
+
+  
+.editButton {
+    position: absolute;
+    //top: 5px;
+    right: 90px;
+    background: var(--primary-button-color);
+    color: var(--button-text-color);
+    border: none;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteButton {
+    position: absolute;
+    //top: 5px;
+    right: 45px;
+    background: var(--primary-button-color);
+    color: var(--button-text-color);
+    border: none;
+    font-size: 18px;
+    //margin-bottom: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+  
+  .imageContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .image {
+    width: 150px;
+    height: auto;
+    border-radius: 5px;
+  }
+  
+
 .addButton {
-    margin-top: 200px;
+    //margin-top: 200px;
     background-color: var(--background-color);
     color: var(--primary-color);
     font-size: 18px;

@@ -1,101 +1,117 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect} from "react";
 import styles from "./MovieNewsModal.module.scss";
 import { MdOutlineImage } from "react-icons/md";
 import axiosInstance from "../../services/axiosInstance";
 import { uploadToS3 } from "../../utils/s3Upload";
 
-function MovieNewsModal({ isOpen, onClose }) {
+function MovieNewsModal({ isOpen, onClose, onMoviesAdded }) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [imageFile, setImageFile] = useState(null);
-    const [imageUrl, setImageUrl] = useState("");
+    //const [imageFile, setImageFile] = useState(null);
+    const [imageUrls, setImageUrls] = useState("");
+    const [uploadedImages, setUploadedImages] = useState([]);
     // const [previewUrl, setPreviewUrl] = useState(""); //For showing preview
     // const [errorMsg, setErrorMsg] = useState("");
-    const fileInputRef = useRef(null);
+    //const [imageFields, setImageFields] = useState([{ id: Date.now(), images:{landscape: "", portrait:"", thumbnail:""} }]);
+
+    const fileInputRef = useRef([]);
+
+    useEffect(() => {
+        const handleEscape = (event) => {
+          if (event.key === "Escape") {
+            onClose();
+          }
+        };
+        document.addEventListener("keydown", handleEscape);
+        return () => document.removeEventListener("keydown", handleEscape);
+      }, [onClose]);
 
     if (!isOpen) return null;
 
-    const handleIconClick = () => {
-        fileInputRef.current.click();
-    };
+    // const handleIconClick = () => {
+    //     fileInputRef.current.click();
+    // };
+
+    const resizeImage = (file, width, height) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            img.src = e.target.result;
+          };
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+              const resizedFile = new File([blob], file.name, { type: "image/jpeg" });
+              resolve(resizedFile);
+            }, "image/jpeg");
+          };
+          reader.readAsDataURL(file);
+        });
+      };
 
     const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        // if (file) {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-        //     // const allowedTypes = ["image/jpeg", "im"]
-        //     console.log("Selected file:", file); 
-        //     setImageFile(file);    
-        // }
-        if(file) {
-            try{
-                const uploadedImageUrl  = await uploadToS3(file);
-                setImageUrl(uploadedImageUrl); 
-            } catch (error) {
-                alert("Failed to upload image");
-            } 
-        }
-    };
+    try {
+        const uploadPromises = files.map(async (file) => {
+            const landscape = await resizeImage(file, 260, 150);
+            const portrait = await resizeImage(file, 320, 250);
+            const thumbnail = await resizeImage(file, 300, 300);
+
+            const [landscapeUrl, portraitUrl, thumbnailUrl] = await Promise.all([
+                uploadToS3(landscape),
+                uploadToS3(portrait),
+                uploadToS3(thumbnail),
+            ]);
+
+            return { landscape: landscapeUrl, portrait: portraitUrl, thumbnail: thumbnailUrl };
+        });
+
+        const allUploadedImages = await Promise.all(uploadPromises);
+        setUploadedImages(prev => [...prev, ...allUploadedImages]);
+
+    } catch (error) {
+        alert("Failed to upload one or more images.");
+    }
+};
 
     const handleUpload = async () => {
-        if (!title.trim()) {
-            alert("Please enter a movie title");
-            return;
-        }
-    
-        if (!description.trim()) {
-            alert("Please enter a description");
-            return;
-        }
-    
-        if (!imageUrl) {
-            alert("Please upload an image");
-            return;
-        }
+    if (!title.trim() || !description.trim() || uploadedImages.length === 0) {
+        alert("Please fill all fields and upload at least one image.");
+        return;
+    }
 
-        // if (imageFile) {
-        //     try {
-        //         console.log("Uploading to S3:", imageFile);
-        //         uploadedImageUrl = await uploadToS3(imageFile); // Upload to S3 and get URL
-        //         console.log("Uploaded Image URL:", uploadedImageUrl);
-        //         setImageUrl(uploadedImageUrl); 
-        //     } catch (error) {
-        //         console.error("Image upload failed:", error);
-        //         alert("Image upload failed");
-        //         return;
-        //     }
-        // }
-    
-        // const formData = new FormData();
-        // formData.append("title", title);
-        // formData.append("description", description);
-        // formData.append("image", imageFile);
-    
-        // console.log("Uploading data:", { title, description, imageFile });
-        // console.log("Trimmed Description:", description.trim());
-    
-        try {
-            const response = await axiosInstance.post("/movienews/addmovienews", {
-                // headers: { "Content-Type": "multipart/form-data" },
-                title: title,
-                description: description,
-                imageUrl,
-            });
-    
-            if (response.status === 201) {
-                alert("Movie News added successfully!");
-                onClose();
-                setTitle("");
-                setDescription("");
-                setImageFile(null);
-                setImageUrl("");
-                fileInputRef.current.value = "";
-            }
-        } catch (error) {
-            console.error("Error adding movie news:", error.response?.data || error);
-            alert("Failed to add movie news: " + (error.response?.data?.message || "Unknown error"));
+    try {
+        const response = await axiosInstance.post("/movienews/addmovienews", {
+            title,
+            description,
+            images: uploadedImages, // Already formatted correctly
+        });
+
+        if (response.status === 201) {
+            alert("Movie News added successfully!");
+            onClose();
+            setTitle("");
+            setDescription("");
+            setUploadedImages([]);
+            setImageUrls("");
+            onMoviesAdded();
         }
-    };
+    } catch (error) {
+        alert("Failed to add movie news.");
+    }
+};
+
+const handleRemoveImage = (index) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+};
+   
         
     return (
         <div className={styles.modalOverlay}>
@@ -103,7 +119,8 @@ function MovieNewsModal({ isOpen, onClose }) {
                 <button onClick={onClose} className={styles.closeButton}>✖</button>
                 <h2>Add Movie News</h2>
 
-                <label>Title</label>
+                <div className={styles.modalBody}>
+                  <label>Title</label>
                 <div className={styles.inputContainer}>
                     
                     <input 
@@ -125,28 +142,39 @@ function MovieNewsModal({ isOpen, onClose }) {
                     />
                 </div>
  
-                <label>Thumbnail Image</label>
+                <label>Movie News ImageUrl</label>
                 <div className={styles.inputContainer}>
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} hidden />
-                    <input
-                        type="text"
-                        placeholder="Select Image"
-                        value={imageUrl}
-                        onChange={() => {
-                            setImageFile(null); 
-                        }}
-                        //disabled={imageFile !== null} 
-                            // className={styles.inputField}
-                    />
-                    <MdOutlineImage className={styles.icon} onClick={handleIconClick} />
-                        {/* <button onClick={() => fileInputRef.current.click()} className={styles.uploadButton}>
-                            Upload Image
-                        </button> */}
-                    
+                  <input
+                    type="text"
+                    placeholder="Uploaded Image URL"
+                    value={imageUrls}
+                    readOnly
+                  />
+                  <MdOutlineImage className={styles.icon} onClick={() => fileInputRef.current.click()} />
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    multiple
+                    //hidden
+                  />
                 </div>
 
+                <ul className={styles.uploadedList}>
+                  {uploadedImages.map((img, i) => (
+                    <li key={i} className={styles.uploadedItem}>
+                      <div className={styles.imageRow}>
+                        <span className={styles.imageUrl}>{img.landscape}</span>
+                        <button onClick={() => handleRemoveImage(i)} className={styles.removeButton}>X</button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                </div>
+                
                 <div className={styles.modalActions}>
-                    <button onClick={handleUpload} className={styles.add}>Upload News</button>
+                    <button onClick={handleUpload} className={styles.add}>Submit</button>
                 </div>
             </div>
         </div>

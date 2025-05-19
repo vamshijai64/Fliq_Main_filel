@@ -4,15 +4,22 @@ import axiosInstance from '../../../services/axiosInstance';
 import MovieCategoryModal from './MovieCategoryModal';
 // import MovieTitles from '../MovieTitles/MovieTitles';
 import MovieTitlesModal from './MovieTitleModal';
+import { MdEdit, MdDelete } from "react-icons/md";
 import MovieTitles from '../MovieTitles/MovieTitles';
+import EditMovieCategory from './Edit/EditMovieCategory';
 
 function MovieCategory() {
     const [title, setTitle] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTitleId, setSelectedTitleId] = useState(null);
     const [showTitles, setShowTitles] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [selectedCategoryName, setSelectedCategoryName] = useState(null);
     // const [sectionId, setSectionId] = useState("");
+    const [categories, setCategories] = useState([]);
     const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+    const [selectedCategoryImageUrl, setSelectedCategoryImageUrl] = useState("");
 
     useEffect(() => {
         fetchCategories();
@@ -29,13 +36,14 @@ function MovieCategory() {
         }
     }
 
-    const getImageUrl = (imagePath) => {
-        if (!imagePath) return "";
-        if (imagePath.startsWith("http")) return imagePath;
+    const getImageUrl = (imageObj) => {
+        if (!imageObj || typeof imageObj !== "object") return "";
     
-        const baseUrl = axiosInstance.defaults.baseURL;
+        const url = imageObj.portrait; 
     
-        return `${baseUrl}${imagePath}`;
+        if (!url || typeof url !== "string") return "";
+    
+        return url.startsWith("http") ? url : `${axiosInstance.defaults.baseURL}${url}`;
     };
 
     const openSubCategoryModal = (sectionId) => {
@@ -47,6 +55,27 @@ function MovieCategory() {
         setSelectedTitleId(titleId);
         setShowTitles(true);
     };
+
+    const openEditcategoryModal = (category) => {
+        setSelectedCategoryId(category._id);
+        setIsEditModalOpen(true);
+        setSelectedCategoryName(category.title);
+        setSelectedCategoryImageUrl(category.imageUrl);
+    }
+
+    const handleDeleteCategory = async (categoryId) => {
+        if (!window.confirm("Are you sure you want to delete this category?")) return;
+
+        try {
+            await axiosInstance.delete(`/section/deleteSection/${categoryId}`);
+            await fetchCategories();
+            setCategories(categories.filter(category => category._id !== categoryId));
+            alert("Category deleted successfully");
+        } catch (error) {
+            console.error("Error deleting category:", error);
+            alert("Failed to delete category");
+        }
+    }
 
     return (
         <div>
@@ -70,6 +99,14 @@ function MovieCategory() {
                             title.map((item) => (
                                 <div key={item._id} className={styles.titleCard}>
                                     <img src={getImageUrl(item.imageUrl)} alt={item.name} className={styles.titleImage} />
+
+                                    <button className={styles.editButton} onClick={() => openEditcategoryModal(item)}>
+                                        <MdEdit /> 
+                                    </button>
+                                    
+                                    <button className={styles.deleteButton} onClick={() => handleDeleteCategory(item._id)}>
+                                        <MdDelete />
+                                    </button>
                                     
                                     <button className={styles.addTitleButton} onClick={() => openSubCategoryModal(item._id)}>
                                         +
@@ -95,6 +132,15 @@ function MovieCategory() {
                         isOpen={isSubCategoryModalOpen}
                         onClose={() => setIsSubCategoryModalOpen(false)}
                         sectionId={selectedTitleId}
+                    />
+
+                    <EditMovieCategory
+                        isOpen={isEditModalOpen}
+                        categoryId={selectedCategoryId}
+                        onClose={() => setIsEditModalOpen(false)}  
+                        categoryName={selectedCategoryName}  
+                        imageUrl={selectedCategoryImageUrl} 
+                        onEditCategory={fetchCategories} 
                     />
                 </>
             )}
